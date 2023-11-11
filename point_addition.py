@@ -1,34 +1,47 @@
-a = 497
-b = 1768
-p = 9739
 
-P = (493, 5564)
-Q = (1539, 4742) 
-R = (4403,5202)
+# Point Addition in Elliptic Curve
 
-p = 9739
-def point_addition(P,Q):
-    O = (0,0)
-    if (P == O) :
-        return Q
-    elif (Q == O):
-        return P
-    x1, y1 = P[0], P[1]
-    x2, y2 = Q[0], Q[1]
-    
-    if (x1 == x2 and y1 == -y2) :
-        return 0
-    
-    if P != Q:
-        lam = ((y2 - y1) * pow(x2 - x1,-1, p)) % p
-    else :
-        lam = ((3 * x1**2 + a) * pow(2 * y1,-1, p)) % p
-    x3 = (lam**2 - x1 - x2) % p
-    y3 = (lam * (x1 - x3) - y1) % p
-    summation = (x3, y3)
-    return summation
-S = point_addition(point_addition(point_addition(P, P), Q), R)
+p= 9739
+a=497
+b=1768
+
+def add_points(p1,p2):
+  # p1=(x1,y1) , p2=(x2,y2)
+  
+  if p1 == (0,0):
+    return p2
+  if p2 == (0,0):
+    return p1
+  # Revisar si este es iverso
+  x1,y1=p1
+  x2,y2=p2
+  if x1==x2 and y1==-y2:
+    return (0,0)
+
+  if p1==p2:
+    s1=( 3*pow(x1,2,p) + a ) % p
+    s2=(2*y1)%p
+    s=s1*pow(s2,-1,p)
+  else:
+    s1=(y2-y1)%p
+    s2=(x2-x1)%p
+    s=s1*pow(s2,-1,p)
+  # Calculamos el punto ahora 
+  x3=((s*s)-x1-x2)%p
+  y3=(s*(x1-x3)-y1)%p
+  return (x3,y3)
+
+def scalar_mul(p,n):
+  P = p
+  Q = p
+  R=(0,0) 
+  while n>0:
+    if n&1:
+      R=add_points(R,Q)
+    Q=add_points(Q,Q)
+    n=n//2
+  return R    
+
+P = (2339, 2213)
+S=scalar_mul(P,7000)
 print(S)
-    
-    
-    
